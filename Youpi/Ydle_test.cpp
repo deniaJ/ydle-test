@@ -347,55 +347,55 @@ void Ydle_test::send(Frame_t *frame)
  	// Octet de start annoncant le départ du signal au recepteur 	
 
 	// TODO : Essayer de comprendre pourquoi ça foire en utilisant ce code...
-	/*for (i = 7; i>=0; i--)
+	for (i = 7; i>=0; i--)
 	{
 		digitalWrite(pinTx, (start_bit2 & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
-		digitalWrite(pinTx, ~(start_bit2 & 1<<i));   // Pulsation � l'�tat haut
+		digitalWrite(pinTx, !(start_bit2 & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
- 	}*/
-	
+ 	}
+	/*
 	for(i = 0; i<8;i++){
 		sendPair((start_bit2 & 1<<i));
-	}
+	}*/
 	// Frame sending
 	// TODO : Inverser sender and receptor
 	for(i = 7; i>=0; i--){
 		digitalWrite(pinTx, (frame->sender & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
-		digitalWrite(pinTx, ~(frame->sender & 1<<i));   // Pulsation � l'�tat haut
+		digitalWrite(pinTx, !(frame->sender & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
 	}
 	for(i = 7; i>=0; i--){
 		digitalWrite(pinTx, (frame->receptor & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
-		digitalWrite(pinTx, ~(frame->receptor & 1<<i));   // Pulsation � l'�tat haut
+		digitalWrite(pinTx, !(frame->receptor & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
 	}
 	for(i = 2; i>=0; i--){
 		digitalWrite(pinTx, (frame->type & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
-		digitalWrite(pinTx, ~(frame->type & 1<<i));   // Pulsation � l'�tat haut
+		digitalWrite(pinTx, !(frame->type & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
 	}	
 	for(i = 4; i>=0; i--){
 		digitalWrite(pinTx, (frame->taille & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
-		digitalWrite(pinTx, ~(frame->taille & 1<<i));   // Pulsation � l'�tat haut
+		digitalWrite(pinTx, !(frame->taille & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
 	}
 	for(i=0;i<frame->taille-1;i++){
 		for(j = 7; j>=0; j--){
 			digitalWrite(pinTx, (frame->data[i] & 1<<j));   // Pulsation � l'�tat haut
 			delayMicroseconds(YDLE_TPER);      // t_per
-			digitalWrite(pinTx, ~(frame->data[i] & 1<<j));   // Pulsation � l'�tat haut
+			digitalWrite(pinTx, !(frame->data[i] & 1<<j));   // Pulsation � l'�tat haut
 			delayMicroseconds(YDLE_TPER);      // t_per
 		}
 	}
 	for(i = 7; i>=0; i--){
 		digitalWrite(pinTx, (frame->crc & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
-		digitalWrite(pinTx, ~(frame->crc & 1<<i));   // Pulsation � l'�tat haut
+		digitalWrite(pinTx, !(frame->crc & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
 	}
 

@@ -52,6 +52,8 @@
 #error Platform not defined
 #endif
 
+#define _DEBUG
+
 #define MAX_SIZE_FRAME 64
 
 #define TYPE_ETAT 		1 // Node send data
