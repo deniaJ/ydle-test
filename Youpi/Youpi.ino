@@ -1,6 +1,6 @@
 #include "Ydle_test.h"
 
-#define DELAY_SEND 1000
+#define DELAY_SEND 2000
 Ydle_test y(2, 10, 1);
 
 unsigned long last_send, cur_time;
@@ -10,6 +10,8 @@ void dummy_callback(Frame_t *frame){
 	Serial.println("Hey, i'm the callback dude !");
 	Serial.print("Paquet recu de :");
 	Serial.println(frame->sender);
+	Serial.print("Type de trame:");
+	Serial.println(frame->type);
 }
 
 void setup()
@@ -20,6 +22,7 @@ void setup()
 	y.init_timer();
 	y.attach(dummy_callback);
 	y.debugMode();
+	//y.ReadConfig();
 
 	cur_time = millis();
 	last_send = cur_time;
@@ -33,9 +36,10 @@ void loop()
 		if(cur_time - last_send >= DELAY_SEND){
 			last_send = cur_time;
 			Frame_t f;
-			y.dataToFrame(&f, 1, 2, 1);
+			y.dataToFrame(&f, 1);
 			y.addData(&f, DATA_DEGREEC, 10);
 			y.send(&f);
 		}
 	}
 }
+

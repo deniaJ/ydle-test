@@ -52,7 +52,7 @@
 #error Platform not defined
 #endif
 
-#define _DEBUG
+#define _YDLE_DEBUG
 
 #define MAX_SIZE_FRAME 64
 
@@ -181,11 +181,6 @@ private:
 	
 	// Do something with a received Command
 	void HandleReceiveCommand(Frame_t *frame);
-	
-	// Double un bit en code Manchester
-	void sendPair(bool b);
-	// Cr�e une pulsation haute de 310�s suivie d'une pulsation basse repr�sentative du bit � envoyer
-	void sendBit(bool b);
 
 	// Compare le signal re�u au signal de r�f�rence
 	bool checkSignal(Frame_t *frame);
@@ -199,3 +194,4 @@ private:
 };
 
 #endif
+

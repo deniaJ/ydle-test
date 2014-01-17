@@ -185,7 +185,7 @@ unsigned char Ydle_test::computeCrc(Frame_t* frame){
 	for(a=3, j=0 ;j < frame->taille - 1;a++, j++){
 		buf[a] = frame->data[j];
 	}
-	crc = crc8(buf,frame->taille+3);
+	crc = crc8(buf,frame->taille+2);
 	free(buf);
 	return crc;
 }
@@ -214,6 +214,8 @@ void Ydle_test::rfReceiveTask(){
 #ifdef _YDLE_DEBUG
 				printFrame(&g_m_receivedframe);
 #endif // _YDLE_DEBUG
+			}else if(g_m_receivedframe.type == TYPE_ACK){
+				Serial.println("ACK received");
 			}else{
 #ifdef _YDLE_DEBUG
 				printFrame(&g_m_receivedframe);
@@ -235,7 +237,7 @@ Ydle_test::Ydle_test(int rx, int tx, int button)
 	m_bLnkSignalReceived=false;
 	m_initializedState = false;
 	this->_callback_set = false;
-	readEEProm();
+	//readEEProm();
 	pinMode(rx, INPUT);
   	pinRx = rx;
   	pinMode(tx, OUTPUT);
@@ -281,37 +283,6 @@ void Ydle_test::log(String msg,int i)
 #endif
 }
 
-// Envoie d'une paire de pulsation radio qui definissent 1 bit r�el : 0 = "01" et 1 = "10"
-// c'est le codage de manchester qui necessite ce petit bouzin, ceci permet entre autres de dissocier les donn�ees des parasites
-void Ydle_test::sendPair(bool b) 
-{
- 	if(b)
- 	{
-  		sendBit(true);
-  	 	sendBit(false);
- 	}
- 	else
- 	{
-  	 	sendBit(false);
-  	 	sendBit(true);
- 	}
-}
-
-// Cr�ation d'une pulsation radio en fonction du bit � envoyer
-//1 = t_per �s haut
-//0 = t_per �s bas
-void Ydle_test::sendBit(bool b)
-{
-	if (b) {                       // si "1"
-		digitalWrite(pinTx, HIGH);   // Pulsation � l'�tat haut
-		delayMicroseconds(YDLE_TPER);      // t_per
- 	}
-	else {                         // si "0"
-		digitalWrite(pinTx, LOW);    // Pulsation � l'�tat bas
-		delayMicroseconds(YDLE_TPER);      // t_per
-	}
-}
-
 // Synchronise l'AGC, envoie l'octet de start puis transmet la trame
 void Ydle_test::send(Frame_t *frame)
 {
@@ -345,8 +316,6 @@ void Ydle_test::send(Frame_t *frame)
 	}
 	
  	// Octet de start annoncant le départ du signal au recepteur 	
-
-	// TODO : Essayer de comprendre pourquoi ça foire en utilisant ce code...
 	for (i = 7; i>=0; i--)
 	{
 		digitalWrite(pinTx, (start_bit2 & 1<<i));   // Pulsation � l'�tat haut
@@ -354,10 +323,7 @@ void Ydle_test::send(Frame_t *frame)
 		digitalWrite(pinTx, !(start_bit2 & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
  	}
-	/*
-	for(i = 0; i<8;i++){
-		sendPair((start_bit2 & 1<<i));
-	}*/
+
 	// Frame sending
 	// TODO : Inverser sender and receptor
 	for(i = 7; i>=0; i--){
@@ -369,7 +335,7 @@ void Ydle_test::send(Frame_t *frame)
 	for(i = 7; i>=0; i--){
 		digitalWrite(pinTx, (frame->receptor & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
-		digitalWrite(pinTx, !(frame->receptor & 1<<i));   // Pulsation � l'�tat haut
+		digitalWrite(pinTx, ~(frame->receptor & 1<<i));   // Pulsation � l'�tat haut
 		delayMicroseconds(YDLE_TPER);      // t_per
 	}
 	for(i = 2; i>=0; i--){
@@ -454,7 +420,6 @@ void Ydle_test::writeEEProm()
 }
 
 void timerInterrupt(){
-	// Va causer des probl�mes, il faut trouver un moyen pour �viter de transmettre si le m�dia n'est pas libre
 	if(!transmission_on){
 		if(rx_done)
 		{
@@ -1003,3 +968,4 @@ void Ydle_test::attach(ydleCallbackFunction function){
 	this->callback = function;
 	this->_callback_set = true;
 }
+
