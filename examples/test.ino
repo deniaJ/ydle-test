@@ -1,10 +1,11 @@
-#include "Ydle_test.h"
+#include "Ydle_lib.h"
 
-#define DELAY_SEND 2000
-Ydle_test y(2, 10, 1);
+#define DELAY_SEND 5000
+
+static ydlelib y(8, 10, 3);
 
 unsigned long last_send, cur_time;
-
+int i = 0;
 // User callback to handle the new order
 void dummy_callback(Frame_t *frame){
 	Serial.println("Hey, i'm the callback dude !");
@@ -21,23 +22,21 @@ void setup()
 
 	y.init_timer();
 	y.attach(dummy_callback);
-	y.debugMode();
-	//y.ReadConfig();
-
-	cur_time = millis();
+	
+	cur_time = 0;
 	last_send = cur_time;
 }
 
 void loop()
 {
-	y.rfReceiveTask();
+	y.receive();
 	if(y.initialized()){
 		cur_time = millis();
 		if(cur_time - last_send >= DELAY_SEND){
 			last_send = cur_time;
 			Frame_t f;
-			y.dataToFrame(&f, 1);
-			y.addData(&f, DATA_DEGREEC, 10);
+			y.dataToFrame(&f, 4);
+			y.addData(&f, YDLE_DATA_DEGREEC, i++);
 			y.send(&f);
 		}
 	}
